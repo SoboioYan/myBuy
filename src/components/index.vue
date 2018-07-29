@@ -78,9 +78,9 @@
                     <div class="wrap-box">
                         <ul class="img-list">
                             <li v-for="(itemSon, i) in item.datas" :key="itemSon.artID">
-                                <a href="#/site/goodsinfo/87" class="">
+                                 <router-link :to="'/goodsInfo/'+itemSon.artID">
                                     <div class="img-box">
-                                        <img :src="itemSon.img_url">
+                                        <img v-lazy="itemSon.img_url">
                                     </div>
                                     <div class="info">
                                         <h3>{{itemSon.artTitle}}</h3>
@@ -93,7 +93,7 @@
                                             </span>
                                         </p>
                                     </div>
-                                </a>
+                                </router-link>
                             </li>
                         </ul>
                     </div>
@@ -102,8 +102,6 @@
     </div>
 </template>
 <script>
-    import axios from 'axios';
-    import moment from 'moment';
     export default {
         // 数据
         data: function () {
@@ -116,7 +114,7 @@
         },
 
         beforeMount() {
-            axios.get('http://47.106.148.205:8899/site/goods/gettopdata/goods')
+            this.axios.get('/site/goods/gettopdata/goods')
                 .then((response) => {
                     // console.log(response);
                     this.catelist = response.data.message.catelist;
@@ -126,7 +124,7 @@
                 })
                 .catch(response => {})
             // 获取底部的商品列表数据
-            axios.get(`http://47.106.148.205:8899/site/goods/getgoodsgroup`)
+            this.axios.get(`http://47.106.148.205:8899/site/goods/getgoodsgroup`)
                 .then((response) => {
                     console.log(response);
                     this.goodlist = response.data.message;
@@ -138,11 +136,6 @@
         },
         mounted() {
 
-        },
-        filters: {
-            cutTime(value) {
-                return moment(value).format('YYYY-MM-DD');
-            }
         },
     }
 </script>
