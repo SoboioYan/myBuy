@@ -561,4 +561,3 @@ line-height: 30px;border: 1px solid #34ad2a;}
 .goods-tab .tab-head ul li{ float:left; margin-left:-1px; border-left:1px solid #f0f0f0; border-right:1px solid #f0f0f0; }
 .goods-tab .tab-head ul li a{ display:block; padding:0 30px; height:42px; line-height:42px; color:#555; font-size:14px; }
 .goods-tab .tab-head ul li a:hover,.goods-tab .tab-head ul li a.selected{ color:#fff; background:#34ad2a; }
-/*  */

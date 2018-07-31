@@ -14,6 +14,6 @@ ul, ol, li {list-style-type:none;vertical-align:0}
 .menu ul li a span{position:absolute;left:0;width:111px;}
 .menu ul li a span.out{top:0px;}
 .menu ul li a span.over,  .menu ul li a span.bg{top:-48px;}
-#menu2{background-repeat:repeat;}
+/* #menu2{background-image:url(../images/s_03.jpg);background-repeat:repeat;} */
 #menu2 ul li a{color:#FFFFFF;}
-#menu2 ul li a span.over{color:#FFF;height:48px;width:111px;background-color: red;background-repeat:repeat;}
+#menu2 ul li a span.over{color:#FFF;height:48px;width:111px;background-image:url(../images/w_03.jpg);background-repeat:repeat;}
