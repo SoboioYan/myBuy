@@ -105,7 +105,9 @@
                     <div class="cart-foot clearfix">
                         <div class="right-box">
                             <button class="button" onclick="javascript:location.href='/index.html';">继续购物</button>
-                            <button class="submit" onclick="formSubmit(this, '/', '/shopping.html');">立即结算</button>
+                            <router-link to="/payOrder">
+                                <button class="submit">立即结算</button>
+                            </router-link>
                         </div>
                     </div>
                     <!--购物车底部-->
@@ -155,7 +157,7 @@ export default {
     });
     
     // 获取 数据 拼接为 id1,id2,id3....
-    // console.log(this.$store.state.buyList);
+    // // console.log(this.$store.state.buyList);
     let buyList = this.$store.state.buyList;
     let ids = "";
     for (const key in buyList) {
@@ -164,7 +166,7 @@ export default {
     }
     // 最后多了一个 ,
     ids = ids.slice(0, -1);
-    // console.log(ids);
+    // // console.log(ids);
     // 购物车的数据 id:num
     this.axios
       .get(`site/comment/getshopcargoods/${ids}`)
@@ -186,7 +188,7 @@ export default {
         }, 500);
       })
       .catch(err => {
-        console.log(err);
+        // console.log(err);
       });
   },
   // 计算属性
@@ -214,7 +216,7 @@ export default {
   methods:{
         // 改变
         countChange(value,index){
-            //   console.log(value);
+            //   // console.log(value);
             this.$store.commit('changeCount',{
                 goodId:this.message[index].id,
                 goodNum:value
