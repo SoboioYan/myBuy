@@ -1,5 +1,5 @@
 <template>
-  <div>
+    <div>
         <div class="section">
             <div class="location">
                 <span>当前位置：</span>
@@ -34,34 +34,37 @@
     </div>
 </template>
 <script>
-  export default {
+export default {
     data:function(){
-      return{
-        userName:'admin',
-        password:'123'
-      }
+        return{
+            userName:'admin',
+            password:'123'
+        }
     },
     methods:{
-      login(){
-        this.axios.post('site/account/login',{
-          user_name:this.userName,
-          password:this.password
-        }).then(response=>{
-          // console.log(response);
-          if (response.data.status==0) {
-            this.$Message.success(response.data.message);
-            // 调用我们vuex 方法
-            this.$store.commit('changeLogin',true);
-            // 从哪来回哪去
-            this.$router.push(this.$store.state.fromPath)
-          }else{
-            this.$Message.error(response.data.message);
-          }
-        }).catch(err=>{})
-      }
+        login(){
+            this.axios.post('site/account/login',{
+                user_name:this.userName,
+                password:this.password
+            }).then(response=>{
+                // // console.log(response);
+                if(response.data.status==0){
+                    this.$Message.success(response.data.message);
+                    // 调用vuex中的方法
+                    this.$store.commit('changeLogin',true);
+                    // 从哪来回哪去
+                    this.$router.push(this.$store.state.fromPath);
+                }else{
+                    this.$Message.error(response.data.message);
+                }
+            }).catch(err=>{
+                // console.log(err);
+            })
+        }
     }
-  }
+};
 </script>
+
 <style scoped>
-  
 </style>
+

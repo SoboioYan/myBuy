@@ -12,14 +12,13 @@
                 </div>
                 <div id="menu" class="right-box">
                     <span v-if="!$store.state.isLogin">
-                        <!-- <a href="" class="">登录</a> -->
                         <router-link to="/login">登录</router-link>
                         <strong>|</strong>
                         <a href="" class="">注册</a>
                         <strong>|</strong>
                     </span>
                     <span v-if="$store.state.isLogin">
-                        <a href="" class="">会员中心</a>
+                        <router-link to="/personalCenter">会员中心</router-link>
                         <strong>|</strong>
                         <a @click="logout">退出</a>
                         <strong>|</strong>
@@ -157,21 +156,24 @@ export default {
   },
   // 创建出来声明周期函数
   created(){
-    //   // console.log(this.$store);
+      // console.log(this.$store);
   },
   methods:{
       logout(){
-          this.axios.get('/site/account/logout')
+          this.axios.get("/site/account/logout")
           .then(response=>{
-            //   console.log(response);
-            if(response.data.status == 0){
+            //   // console.log(response);
+            if(response.data.status==0){
                 this.$Message.success(response.data.message);
                 // 跳页面
                 this.$router.push('/');
                 // 修改vuex中的值
                 this.$store.commit('changeLogin',false);
             }
-          }).catch(err=>{})
+          })
+          .catch(err=>{
+
+          })
       }
   }
 };

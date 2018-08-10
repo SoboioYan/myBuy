@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@xkeshi/vue-qrcode": "^1.0.0",
     "axios": "^0.18.0",
     "element-ui": "^2.4.4",
     "font-awesome": "^4.7.0",

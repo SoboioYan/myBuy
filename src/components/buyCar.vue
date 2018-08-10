@@ -82,17 +82,17 @@
                                     </td>
                                     <td width="84" align="left">{{item.sell_price}}</td>
                                     <td width="104" align="center">
-                                        <el-input-number @change="countChange($event,index)" v-model="item.buycount" size="mini" :min="1" :max="10" label="描述文字"></el-input-number>
+                                        <el-input-number @change="change($event,index)" v-model="item.buycount" size="mini" :min="1"  label="描述文字"></el-input-number>
                                     </td>
                                     <td width="104" align="left">{{item.buycount*item.sell_price}}</td>
                                     <td width="54" align="center">
-                                        <a @click="delIndex=index;showModal=true" href="javascript:void(0)">删除</a>
+                                        <a @click="delItem(index)" href="javascript:void(0)">删除</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th align="right" colspan="8">
                                         已选择商品
-                                        <b class="red" id="totalQuantity">{{selectCount}}</b> 件 &nbsp;&nbsp;&nbsp; 商品总金额（不含运费）：
+                                        <b class="red" id="totalQuantity">{{totalCount}}</b> 件 &nbsp;&nbsp;&nbsp; 商品总金额（不含运费）：
                                         <span class="red">￥</span>
                                         <b class="red" id="totalAmount">{{totalPrice}}</b>元
                                     </th>
@@ -105,35 +105,18 @@
                     <div class="cart-foot clearfix">
                         <div class="right-box">
                             <button class="button" onclick="javascript:location.href='/index.html';">继续购物</button>
-                            <router-link to="/payOrder">
+                            <!-- <router-link to="/payOrder">
                                 <button class="submit">立即结算</button>
-                            </router-link>
+                            </router-link> -->
+                            <!-- 需要带上数据过去 所以使用点击事件 router.push 进行跳转 -->
+                            <button @click="toPayOrder" class="submit">立即结算</button>
+
                         </div>
                     </div>
                     <!--购物车底部-->
                 </div>
             </div>
         </div>
-        <Modal v-model="showModal" width="360">
-            <p slot="header" style="color:#f60;text-align:center">
-                <Icon type="ios-information-circle"></Icon>
-                <span>警告</span>
-            </p>
-            <div style="text-align:center">
-                <p>确定删掉?</p>
-            </div>
-            <div slot="footer">
-                <Row>
-                    <Col span="12">
-                    <Button type="success" size="large" long @click="showModal=false">取消</Button>
-                    </Col>
-                    <Col span="12">
-                    <Button type="error" size="large" long @click="del">删除</Button>
-                    </Col>
-                </Row>
-
-            </div>
-        </Modal>
     </div>
 </template>
 <script>
@@ -141,23 +124,11 @@ export default {
   name: "buyCar",
   data: function() {
     return {
-      message: [],
-      showModal:false,
-      delIndex:0
+      message: []
     };
   },
   // 获取数据
   created() {
-    // 弹框显示
-    const loading = this.$loading({
-      lock: true,
-      text: 'Loading',
-      spinner: 'el-icon-loading',
-      background: 'rgba(255, 255, 255, 0.7)'
-    });
-    
-    // 获取 数据 拼接为 id1,id2,id3....
-    // // console.log(this.$store.state.buyList);
     let buyList = this.$store.state.buyList;
     let ids = "";
     for (const key in buyList) {
@@ -171,66 +142,99 @@ export default {
     this.axios
       .get(`site/comment/getshopcargoods/${ids}`)
       .then(response => {
-        // this.message = response.data.message;
         // 自己把购买的数量匹配到 返回的数据中
-         response.data.message.forEach((v,i)=>{
-            // 通过id 获取购物车数据中的 加入购物车的数量
-            v.buycount = buyList[v.id];
-            // 是否选中
-            v.isSelected  = true;
+        response.data.message.forEach((v, i) => {
+          // 通过id 获取购物车数据中的 加入购物车的数量
+          v.buycount = buyList[v.id];
+          // 是否被选中
+          v.isSelected = true;
         });
-        // 服务器返回的数据 赋值给 data中的 message
-        // vue 开始跟踪 {id,价格,图片,buycount}
+        // 数据初始化好了之后 再赋值
         this.message = response.data.message;
-        //关闭加载
-        setTimeout(() => {
-          loading.close();
-        }, 500);
       })
       .catch(err => {
         // console.log(err);
       });
   },
   // 计算属性
-  computed:{
-     // 选中的商品数
-      selectCount(){
-          // 定义变量
-          let totalCount = 0;
-          this.message.forEach(v=>{
-              if(v.isSelected) totalCount+=v.buycount;
-          })
-          return totalCount;
-      },
-      // 商品总金额
-      totalPrice(){
-          // 是否选中
-          let price = 0;
-          // 累加金额 数量 价格
-          this.message.forEach(v=>{
-              if(v.isSelected)price +=v.buycount*v.sell_price;
-          })
-          return price
-      } 
+  computed: {
+    // 总数
+    totalCount() {
+      let count = 0;
+      // 被选中的个数 累加
+      this.message.forEach(v => {
+        if (v.isSelected == true) count += v.buycount;
+      });
+      return count;
+    },
+    // 总金额
+    totalPrice() {
+      let price = 0;
+      // 被选中的个数 累加
+      this.message.forEach(v => {
+        if (v.isSelected == true) price += v.buycount * v.sell_price;
+      });
+      return price;
+    }
   },
-  methods:{
-        // 改变
-        countChange(value,index){
-            //   // console.log(value);
-            this.$store.commit('changeCount',{
-                goodId:this.message[index].id,
-                goodNum:value
-            })
-        },
-        // 删除
-        del() {
-            // 删除Vuex中的数据 根据索引 去获取id 如果先删除 对应的元素已经没有了 获取到的id 不是对应的那个了
-            this.$store.commit("delGoodById", this.message[this.delIndex].id);
-            // 获取当前这条数据的 index 删除当前这个组件中的 这一条数据
-            this.message.splice(this.delIndex, 1);
-            // 修改标示变量
-            this.showModal = false;
+  methods: {
+    change(num, index) {
+      //   // console.log(num,index);
+      this.$store.commit("changeNum", {
+        goodId: this.message[index].id,
+        goodNum: num
+      });
+    },
+    // 删除数据
+    delItem(index) {
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$message({
+            type: "success",
+            message: "删除成功!"
+          });
+          //   // console.log(index);
+          // 删除vuex
+          this.$store.commit("delGoodById", this.message[index].id);
+          // 删除本组件
+          this.message.splice(index, 1);
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    // 点击跳转
+    toPayOrder(){
+        // 获取选中的id
+        let ids = '';
+        // 拼接为 id1,id2,id3....
+        this.message.forEach(v=>{
+            if(v.isSelected){
+                ids+=v.id;
+                ids+=','
+            }
+        })
+        if(ids==''){
+            // 一个都没选
+            this.$message({
+                message:'哥们,你起码选一个呀!!',
+                duration:1000
+            });
+            return;
         }
+        // 切掉,
+       ids = ids.slice(0,-1);
+        // 跳转地址
+        this.$router.push('/payOrder/'+ids);
+        
+    }
   }
 };
 </script>
